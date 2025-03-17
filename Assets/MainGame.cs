@@ -41,8 +41,11 @@ public class MainGame : MonoBehaviour
         // Press 2 to move to the next room
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-           
-            NextRoom();
+           if (infight == false)
+            {
+                NextRoom();
+            }
+
 
         }
         // Press 1 to search a room 
@@ -50,24 +53,16 @@ public class MainGame : MonoBehaviour
         {
            if (gameStarted == true) 
             {
-                if (infight == false)
+                if (infight == false && bossfight == false)
                 {
-                    if (bossfight == false) 
-                    {
-                        Searchroom();
-                    }   
+                    Searchroom();
                 }  
                 if (bossfight == true) 
                 {
-                    Debug.Log("You Choose to fight");
-                    Debug.Log("Prepare this fight wont be easy");
-
+                    Debug.Log("You give up");
+                    YouDied();
                 }
-                if (infight == true) 
-                {
                 
-                }
-
             }
 
             
@@ -202,9 +197,17 @@ public class MainGame : MonoBehaviour
                 Debug.Log("You walk through the hallway and enter a large room");
                 Debug.Log("As you enter candles all around the room ignite");
                 Debug.Log("Standing before you is the dungeons guardian");
-                Debug.Log("What should you do next \n [1] Fight him [2] Give up");
+                Debug.Log("What should you do next \n [1] Give up [2] Fight!");
 
             }
+            if (room == 7) 
+            {
+                
+                Debug.Log("You choose to fight");
+                Debug.Log("Get ready, this fight wont be easy");
+                Debug.Log("[2] To continue");
+            }
+
         }
     }
 
