@@ -45,7 +45,10 @@ public class MainGame : MonoBehaviour
             {
                 NextRoom();
             }
-
+           if (infight == true && bossfight == true)
+            {
+                BossFight();
+            }
 
         }
         // Press 1 to search a room 
@@ -101,7 +104,9 @@ public class MainGame : MonoBehaviour
 
     void BossFight() 
     {
-            
+        Debug.Log("Your fight begins");
+        Debug.Log("The Gardian approaches");
+
     }
     //  Boss battle keeps track of turns health and rolls for damage dealt by and to the player 
 
@@ -144,8 +149,8 @@ public class MainGame : MonoBehaviour
        // Contains all text for dialouge when moving between rooms
        // Also changes room number to keep trrack of the players location
        // Also also marks the room as unsearched
-        if (infight == false)
-        {
+        
+        
 
             room = room + 1;
             roomsearched = false;
@@ -202,13 +207,13 @@ public class MainGame : MonoBehaviour
             }
             if (room == 7) 
             {
-                
+                infight = true;
                 Debug.Log("You choose to fight");
                 Debug.Log("Get ready, this fight wont be easy");
                 Debug.Log("[2] To continue");
             }
 
-        }
+        
     }
 
     public void YouDied()
