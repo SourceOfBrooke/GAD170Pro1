@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class MainGame : MonoBehaviour
 {
+    bool playersturn = true;
     bool bossfight = false;
-    public int playerhealth = 100;
+    public int playerhealth = 200;
     int room = 0;
     bool infight = false;
     bool roomsearched = true;
@@ -14,22 +16,41 @@ public class MainGame : MonoBehaviour
     bool haskey = false;
     int bossHealth = 500;
     bool gameStarted = false;
+    bool isplayerdead = false;
+    int healthPotion = 2;
+    int atckTurn = 0;
+
 
     // Start is called before the first frame update
     void Start()
     {     
 
-        Debug.Log("Welcome to Dungeon Crawl The Game tm \n [2] To Start playing [i] For inventory");
+        Debug.Log("Welcome to Dungeon Crawl The Game tm \n [2] To Start playing [i] For inventory [3] to heal");
     }
 
     // Update is called once per frame
     void Update()
     {   // Kills player when health reaches 0
-       if (playerhealth == 0) 
+       if (isplayerdead == false) 
         {
-            YouDied();
+            if (playerhealth <= 0)
+            {
+                isplayerdead = true;
+                YouDied();
+            }
         }
-        // Shows how many coins the player has
+       // when its not the players turn the boss can and will attack
+       if (playersturn == false) 
+        {
+            int bossatk = Random.Range(30, 43);
+            playersturn = true;
+            Debug.Log("The Gardian strike you and deals "+ bossatk +" Damage");
+            playerhealth = playerhealth - bossatk;
+            Debug.Log("Player has " + playerhealth + " Health left");
+            Debug.Log("It's your turn to attack");
+            Debug.Log("[1] to attack [3] to heal");
+        }
+        // Shows what the player has picked up
         if (Input.GetKeyDown(KeyCode.I)) 
         {
             Debug.Log("You Have " + coins + " coins");
@@ -38,37 +59,77 @@ public class MainGame : MonoBehaviour
                 Debug.Log("you have a rusty key");
             }
         }
-        // Press 2 to move to the next room
+        // press 3 at anytime to heal
+        if (Input.GetKeyDown(KeyCode.Alpha3)) 
+        {
+            if (healthPotion >= 1) 
+            {
+                Debug.Log("You used a potion and restored 50 health points");
+                playerhealth = playerhealth + 50;
+                Debug.Log("Player now has " + playerhealth + " health");
+            }
+            else
+            {
+                Debug.Log("You dont have any potions to use");
+            }
+        }
+        // Press 2 for other actions
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-           if (infight == false)
+            // if not in fight move freely
+            if (infight == false)
             {
                 NextRoom();
             }
+            // if reached the boss you can choose to fight
            if (infight == true && bossfight == true)
             {
                 BossFight();
             }
+           if (isplayerdead == true) 
+            {
+                
+                NextRoom();
+            }
+           
 
         }
-        // Press 1 to search a room 
+        
         if (Input.GetKeyDown(KeyCode.Alpha1)) 
-        {
+        {   // Press 1 for differnt actions
            if (gameStarted == true) 
             {
                 if (infight == false && bossfight == false)
-                {
+                {   // if not fighting anyone you can seearch the room
                     Searchroom();
                 }  
-                if (bossfight == true) 
-                {
+                if (bossfight == true && infight == false) 
+                {   // if you have reached to boss and you choose to give up you die
                     Debug.Log("You give up");
                     YouDied();
+                }
+                if (bossfight == true && infight == true) 
+                {   // if you choose to fight then you fight wow
+                    if (playersturn == true) 
+                    {
+                        playersturn = false;
+                        int plyratk = Random.Range(44, 89);
+                        Debug.Log("You swing your sword and deal "+  plyratk + " damage");
+                        bossHealth = bossHealth - plyratk;
+                        Debug.Log("The Gardian has " + bossHealth + " health left");
+                    }
                 }
                 
             }
 
+           // Checks Bosses Health player wins when boss is deaded
+           if (bossHealth <= 0) 
+            {
+                Youwin();
+            }
+
             
+
         }
     }
 
@@ -77,13 +138,15 @@ public class MainGame : MonoBehaviour
     // gives an amount for loot and rolls a chance for random encounters
     void Searchroom() 
     {
-        int loot = Random.Range(0, 101);
+        int loot = Random.Range(1, 101);
+        int potionloot = Random.Range(0, 3);
 
         if (infight == false) 
         {
             if(roomsearched == false) 
             {
                 Debug.Log("You found " + loot + " coins");
+                Debug.Log("You also found " + potionloot + " health potions");
                 if (room == 4)
                 {
                     haskey = true;
@@ -91,6 +154,7 @@ public class MainGame : MonoBehaviour
                 }
                 roomsearched = true;
                 coins = coins + loot;
+                healthPotion = healthPotion + potionloot;
                 Debug.Log("What should you do next \n [1] Look around the room [2] Exit the room");
             }
             
@@ -100,16 +164,28 @@ public class MainGame : MonoBehaviour
             }
         }
     }
-    
 
+    //  Boss battle keeps track of turns health and rolls for damage dealt by and to the play
     void BossFight() 
     {
-        Debug.Log("Your fight begins");
-        Debug.Log("The Gardian approaches");
+        
+        
+        if (atckTurn == 0) 
+        {
+            atckTurn = 1;
+            Debug.Log("Your fight begins");
+            Debug.Log("The Gardian approaches");
+            Debug.Log("[1] to attack [3] to heal");
+        }
+        
 
     }
-    //  Boss battle keeps track of turns health and rolls for damage dealt by and to the player 
 
+    void Youwin() 
+    {
+        Debug.Log("The gardian falls before you");
+        Debug.Log("YOU WIN YIPPEE");
+    }
 
 
     void RandomEncounter() 
@@ -219,7 +295,22 @@ public class MainGame : MonoBehaviour
     public void YouDied()
     // runs when the player dies
     {
-        Debug.Log("You Died \n [1] Last checkpoint    [2] Start over");
+        Debug.Log("You Died [2] Start over");
+        
+        playersturn = true;
+        bossfight = false;
+        playerhealth = 200;
+        room = 0;
+        infight = false;
+        roomsearched = true;
+        coins = 0;
+        haskey = false;
+        bossHealth = 500;
+        gameStarted = false;
+        isplayerdead = false;
+        healthPotion = 2;
+        atckTurn = 0;
+        
     }
 
 
