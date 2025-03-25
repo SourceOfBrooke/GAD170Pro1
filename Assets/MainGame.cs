@@ -19,12 +19,13 @@ public class MainGame : MonoBehaviour
     bool isplayerdead = false;
     int healthPotion = 2;
     int atckTurn = 0;
+    
 
 
     // Start is called before the first frame update
     void Start()
-    {     
-
+    {
+        
         Debug.Log("Welcome to Dungeon Crawl The Game tm \n [2] To Start playing [i] For inventory [3] to heal");
     }
 
@@ -91,6 +92,7 @@ public class MainGame : MonoBehaviour
                 
                 NextRoom();
             }
+           // keep track of timme
            
 
         }
@@ -185,6 +187,8 @@ public class MainGame : MonoBehaviour
     {
         Debug.Log("The gardian falls before you");
         Debug.Log("YOU WIN YIPPEE");
+        Debug.Log("you finished with " + coins + "\n and " + healthPotion + " potions");
+        Debug.Log("It took you " + (int)Time.time + " seconds to win");
     }
 
 
